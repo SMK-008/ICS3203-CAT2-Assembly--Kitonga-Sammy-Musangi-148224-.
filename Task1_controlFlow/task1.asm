@@ -12,53 +12,54 @@ section .text
 
 _start:
     ; Display prompt
-    mov eax, 4             ; syscall: write
-    mov ebx, 1             ; stdout
+    mov eax, 4             
+    mov ebx, 1             
     lea ecx, [prompt]
     mov edx, 32
     int 0x80
 
     ; Read user input
-    mov eax, 3             ; syscall: read
-    mov ebx, 0             ; stdin
+    mov eax, 3             
+    mov ebx, 0             
     lea ecx, [number]
     mov edx, 4
     int 0x80
 
     ; Convert input (assumes number is entered correctly)
-    mov esi, number        ; Point to the input string
-    xor eax, eax           ; Clear EAX (to accumulate result)
-    xor ebx, ebx           ; Clear EBX (to track negativity)
+    mov esi, number        
+    xor eax, eax           
+    xor ebx, ebx           
 
     ; Check for negative sign
     cmp byte [esi], '-'
-    jne parse_digits       ; If not '-', jump to digit parsing
-    inc esi                ; Move to next character
-    mov bl, 1              ; Mark number as negative
+    jne parse_digits       
+    inc esi                
+    mov bl, 1              
 
 parse_digits:
-    xor ecx, ecx           ; Clear ECX (temporary storage)
+    xor ecx, ecx           
+
 parse_loop:
-    mov cl, byte [esi]     ; Load the current character
-    cmp cl, 0              ; Check for null terminator
-    je finalize_conversion ; End of string
-    sub cl, 48             ; Convert ASCII to integer
-    imul eax, eax, 10      ; Multiply EAX by 10 (shift left)
-    add eax, ecx           ; Add current digit to EAX
-    inc esi                ; Move to next character
-    jmp parse_loop         ; Repeat
+    mov cl, byte [esi]     
+    cmp cl, 0              
+    je finalize_conversion 
+    sub cl, 48             
+    imul eax, eax, 10      
+    add eax, ecx           
+    inc esi                
+    jmp parse_loop         
 
 finalize_conversion:
-    cmp bl, 0              ; Check if the number was negative
+    cmp bl, 0              
     je classification
-    neg eax                ; Negate EAX to make it negative
+    neg eax                
 
 classification:
     ; Classify the number
     cmp eax, 0
-    je zero_case           ; If EAX == 0, jump to zero_case
-    jl negative_case       ; If EAX < 0, jump to negative_case
-    jmp positive_case      ; If EAX > 0, jump to positive_case
+    je zero_case           
+    jl negative_case       
+    jmp positive_case      
 
 zero_case:
     ; Display "ZERO"

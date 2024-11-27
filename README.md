@@ -15,6 +15,7 @@ ld -m elf_i386 task1.o -o task1
 - If you enter a negative number, the program returns "NEGATIVE" as output in the terminal.
 - If you enter a positive number i.e number greater than zero, the program returns "POSITIVE" as the output in the terminal.
 - If you enter 0 , the program returns "ZERO" as the output in the terminal.
+#### Challenge
 
 ### Task 2- Array Manipulation with Looping and Reversal (6 Marks)
 ```
@@ -24,6 +25,7 @@ ld -m elf_i386 task2.o -o task2
 ./task2
 
 ```
+#### Challenge
 
 
 ### Task 3- Modular Program with Subroutines for Factorial Calculation (4 Marks)
@@ -37,6 +39,7 @@ ld -m elf_i386 task3.o -o task3
 
 ```
 - When you run the commands above, you are prompted to enter a number and the program returns the factorial of that input number.
+#### Challenge
 ### Task 4- Data Monitoring and Control Using Port-Based Simulation (4 Marks)
 - For this task, i simulated monitoring a sensor value and controlling motor and alarm states based on thresholds.
 - If the input is 50 or below, the output is "Motor is Off".
@@ -48,6 +51,8 @@ ld -m elf_i386 task3.o -o task3
 cd Task4_DataMonitoring
 nasm -f elf32 task4.asm -o task4.o -g
 ld -m elf_i386 task4.o -o task4
-./task3
+./task4
 
 ```
+
+#### Challenge

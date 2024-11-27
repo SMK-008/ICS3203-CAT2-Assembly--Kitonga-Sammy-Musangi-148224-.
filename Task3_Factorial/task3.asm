@@ -1,118 +1,119 @@
 section .data
-    prompt db "Enter a number: ", 0
-    result_msg db "Factorial: ", 0
-    newline db 10, 0               ; Newline character
+    prompt db "Enter a number to calculate its factorial: ", 0
+    prompt_len equ $ - prompt   ; Calculates length of prompt string dynamically
+    result db "The factorial is: ", 0
+    result_len equ $ - result   ; Calculates length of result string dynamically
+    newline db 10, 0            
+
 
 section .bss
-    number resb 4                  ; User input
-    result resd 1                  ; Factorial result
+    number resb 4     
+    factorial resb 4 
 
 section .text
     global _start
 
 _start:
-    ; Prompt user for input
-    mov eax, 4                     ; syscall: write
-    mov ebx, 1                     ; stdout
-    lea ecx, [prompt]
-    mov edx, 15                    ; Length of the prompt
-    int 0x80
+    ; Print prompt
+    mov eax, 4                 
+    mov ebx, 1                 
+    mov ecx, prompt            
+    mov edx, prompt_len        
+    int 0x80                   
 
     ; Read user input
-    mov eax, 3                     ; syscall: read
-    mov ebx, 0                     ; stdin
-    lea ecx, [number]
-    mov edx, 4
-    int 0x80
+    mov eax, 3             
+    mov ebx, 0             
+    mov ecx, number        
+    mov edx, 4             
+    int 0x80               
 
-    ; Convert input from ASCII to integer
-    movzx eax, byte [number]       ; Load the byte from input
-    sub eax, '0'                   ; Convert ASCII to integer
-
-    ; Check if input is valid (factorial of negative numbers doesn't exist)
-    cmp eax, 0
-    jl invalid_input               ; Jump to invalid input handling
+    ; Convert input (ASCII to integer)
+    mov eax, 0             
+    mov esi, number        
+convert_input:
+    movzx ecx, byte [esi]  
+    cmp ecx, 10            
+    je input_done          
+    sub ecx, '0'           
+    imul eax, eax, 10      
+    add eax, ecx           
+    inc esi                
+    jmp convert_input
+input_done:
 
     ; Call factorial subroutine
-    push eax                       ; Save input
-    call factorial
-    add esp, 4                     ; Clean stack
-    mov [result], eax              ; Save factorial result
+    push eax               
+    call factorial_calc    
+    add esp, 4             
 
-    ; Display "Factorial: "
-    mov eax, 4                     ; syscall: write
-    mov ebx, 1                     ; stdout
-    lea ecx, [result_msg]
-    mov edx, 10                    ; Length of "Factorial: "
-    int 0x80
+    ; Store result in `factorial`
+    mov [factorial], eax
 
-    ; Display the factorial result
-    mov eax, [result]              ; Load result
-    call print_number              ; Convert and print the number
+    ; Output result message
+    mov eax, 4             
+    mov ebx, 1             
+    mov ecx, result        
+    mov edx, 20            
+    int 0x80               
+
+    ; Print the factorial result (integer to string conversion)
+    mov eax, [factorial]   
+    call print_number
 
     ; Print newline
-    lea ecx, [newline]
-    mov edx, 1                     ; Length of newline
-    mov eax, 4                     ; syscall: write
-    mov ebx, 1                     ; stdout
+    mov eax, 4             
+    mov ebx, 1             
+    mov ecx, newline       
+    mov edx, 1             
     int 0x80
 
     ; Exit program
-    mov eax, 1                     ; syscall: exit
-    xor ebx, ebx                   ; Exit status 0
+    mov eax, 1             
+    xor ebx, ebx           
     int 0x80
 
-factorial:
-    cmp eax, 1                     ; Base case: factorial(0) = factorial(1) = 1
-    jle base_case                  ; If eax <= 1, jump to base_case
+; Subroutine: Factorial Calculation
+factorial_calc:
+    push ebp               
+    mov ebp, esp           
+    mov ecx, [ebp+8]       
+    mov eax, 1             
 
-    push eax                       ; Save current number
-    dec eax                        ; Decrement for recursion
-    call factorial
-    pop ebx                        ; Restore current number
-    mul ebx                        ; Multiply result
+factorial_loop:
+    cmp ecx, 1             
+    jle factorial_done
+    imul eax, ecx          
+    dec ecx                
+    jmp factorial_loop
 
+factorial_done:
+    pop ebp                
     ret
 
-base_case:
-    mov eax, 1                     ; Factorial(0) = Factorial(1) = 1
-    ret
-
-invalid_input:
-    mov eax, 4                     ; syscall: write
-    mov ebx, 1                     ; stdout
-    lea ecx, [error_msg]
-    mov edx, 19                    ; Length of "Invalid input"
-    int 0x80
-    ; Exit program
-    mov eax, 1
-    xor ebx, ebx
-    int 0x80
 
 print_number:
-    ; Convert a number in EAX to ASCII and print it
-    mov ebx, 10                    ; Divisor for base-10
-    xor ecx, ecx                   ; ECX will hold the digit count
-    xor edx, edx                   ; Clear remainder
+    push ebp               
+    mov ebp, esp           
 
-convert_loop:
-    div ebx                        ; EAX / 10, quotient in EAX, remainder in EDX
-    add dl, '0'                    ; Convert remainder to ASCII
-    push dx                        ; Store the digit on the stack
-    inc ecx                        ; Increment digit count
-    test eax, eax                  ; Check if quotient is 0
-    jnz convert_loop               ; Repeat until no more digits
+    mov ecx, 10            
+    mov esi, esp           
+print_loop:
+    xor edx, edx           
+    div ecx                
+    add dl, '0'          
+    dec esi                
+    mov [esi], dl          
+    test eax, eax         
+    jnz print_loop         
 
-print_digits:
-    pop edx                        ; Retrieve digits from the stack
-    mov eax, 4                     ; syscall: write
-    mov ebx, 1                     ; stdout
-    lea ecx, [edx]
-    mov edx, 1                     ; Write 1 character
-    int 0x80
-    loop print_digits              ; Repeat for all digits
-
+print_done:
+    mov edx, esp         
+    sub edx, esi          
+    mov ecx, esi          
+    mov ebx, 1            
+    mov eax, 4           
+    int 0x80             
+    mov esp, ebp           
+    pop ebp                
     ret
-
-section .data
-    error_msg db "Invalid input", 0 ; Error message for invalid input

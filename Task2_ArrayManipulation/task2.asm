@@ -1,54 +1,68 @@
 section .data
-    array db 10, 20, 30, 40, 50  ; Original array
-    array_len db 5               ; Number of elements
-    newline db 10                ; Newline character
+    array db 5, 10, 15, 20, 25    
+    n equ 5                       
+    newline db 0Ah, 0             
+
+section .bss
+    temp resb 1                   
 
 section .text
     global _start
 
 _start:
-    ; Load the array length correctly
-    movzx ecx, byte [array_len]  ; Load array_len into ecx (zero-extend)
-    lea esi, [array]             ; Pointer to start of the array
-    lea edi, [array + ecx - 1]   ; Pointer to end of the array
-    shr ecx, 1                   ; Divide length by 2 for loop count
+    ; Initialize pointers for the array
+    lea rsi, [array]              
+    lea rdi, [array + n - 1]      
 
 reverse_loop:
-    mov al, [esi]                ; Load the value at the start
-    mov bl, [edi]                ; Load the value at the end
-    mov [esi], bl                ; Swap values
-    mov [edi], al                ; Swap values
-    inc esi                      ; Increment start pointer
-    dec edi                      ; Decrement end pointer
-    loop reverse_loop            ; Repeat until midpoint reached
+    cmp rsi, rdi                  
+    jge reverse_done              
 
-    ; Print the reversed array
-    movzx ecx, byte [array_len]  ; Reload array length into ecx
-    lea esi, [array]             ; Reset pointer to start of the array
+    ; Swap elements at rsi and rdi
+    mov al, [rsi]                 
+    mov bl, [rdi]                 
+    mov [rsi], bl                 
+    mov [rdi], al                 
+
+    ; Move the pointers
+    inc rsi                       
+    dec rdi                       
+    jmp reverse_loop              
+
+reverse_done:
+    ; Print the reversed array (optional, for validation)
+    lea rsi, [array]              
+    mov rcx, n                    
 
 print_loop:
-    mov al, [esi]                ; Load the current array element
-    add al, '0'                  ; Convert it to an ASCII character
-    mov [esi], al                ; Store back in array (for display purposes)
-    inc esi                      ; Move to the next array element
-    loop print_loop              ; Repeat for all elements
+    cmp rcx, 0                    
+    jz exit                       
 
-    ; Write array to stdout
-    lea ecx, [array]             ; Pointer to the start of the array
-    mov edx, byte [array_len]    ; Number of bytes to write
-    mov eax, 4                   ; syscall: write
-    mov ebx, 1                   ; stdout
-    int 0x80                     ; System call
+    movzx rax, byte [rsi]         
+    add rax, '0'                  
+    mov [temp], al                
+    mov rdi, 1                    
+    lea rsi, [temp]               
+    mov rdx, 1                    
+    mov rax, 1                    
+    syscall
 
-    ; Write newline
-    lea ecx, [newline]           ; Pointer to the newline character
-    mov edx, 1                   ; Write 1 byte
-    mov eax, 4                   ; syscall: write
-    mov ebx, 1                   ; stdout
-    int 0x80                     ; System call
+    ; Print a space (except after the last element)
+    dec rcx                       
+    cmp rcx, 0                    
+    jz print_done                 
 
-exit_program:
-    ; Exit program
-    mov eax, 1
-    xor ebx, ebx
-    int 0x80
+    lea rsi, [newline]            
+    mov rdi, 1                    
+    mov rdx, 1                    
+    mov rax, 1                    
+    syscall
+
+print_done:
+    inc rsi                       
+    jmp print_loop                
+
+exit:
+    mov rax, 60                   
+    xor rdi, rdi                  
+    syscall

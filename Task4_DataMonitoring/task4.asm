@@ -6,39 +6,39 @@ section .data
     no_alarm_msg db "No alarm", 10, 0
 
 section .bss
-    sensor_value resb 4   ; To store user input (4 bytes for a 32-bit number)
+    sensor_value resb 4   
 
 section .text
     global _start
 
 _start:
     ; Prompt user for input
-    mov eax, 4             ; syscall: write
-    mov ebx, 1             ; file descriptor (stdout)
+    mov eax, 4             
+    mov ebx, 1             
     lea ecx, [prompt]
-    mov edx, 19            ; Length of prompt message
+    mov edx, 19            
     int 0x80
 
     ; Read user input (sensor value as a string)
-    mov eax, 3             ; syscall: read
-    mov ebx, 0             ; file descriptor (stdin)
+    mov eax, 3             
+    mov ebx, 0             
     lea ecx, [sensor_value]
-    mov edx, 4             ; Read up to 4 bytes
+    mov edx, 4             
     int 0x80
 
     ; Convert input (ASCII to integer)
-    lea esi, [sensor_value] ; Point to the start of the input string
-    xor eax, eax            ; Clear eax (accumulator for result)
-    xor ebx, ebx            ; Clear ebx (temporary register for digit)
+    lea esi, [sensor_value] 
+    xor eax, eax            
+    xor ebx, ebx            
 
 convert_loop:
-    movzx ecx, byte [esi]   ; Load next byte (character)
-    cmp ecx, 10              ; Check if we reached the newline or null terminator
-    je done_conversion       ; If newline (ASCII 10) or null (ASCII 0), stop conversion
-    sub ecx, 48              ; Convert ASCII to integer (subtract '0')
-    imul eax, eax, 10        ; Multiply the result by 10 (shift left one decimal place)
-    add eax, ecx             ; Add the new digit
-    inc esi                  ; Move to the next character
+    movzx ecx, byte [esi]   
+    cmp ecx, 10              
+    je done_conversion       
+    sub ecx, 48              
+    imul eax, eax, 10        
+    add eax, ecx             
+    inc esi                  
     jmp convert_loop
 
 done_conversion:
@@ -80,6 +80,6 @@ stop_motor:
 
 exit:
     ; Exit program
-    mov eax, 1             ; syscall: exit
-    xor ebx, ebx           ; status 0
+    mov eax, 1             
+    xor ebx, ebx           
     int 0x80
