@@ -16,7 +16,7 @@ ld -m elf_i386 task1.o -o task1
 - If you enter a positive number i.e number greater than zero, the program returns "POSITIVE" as the output in the terminal.
 - If you enter zero, the program returns "ZERO" as the output in the terminal
 
-#### Jump Instructions Explanation
+#### Documentation Requirement:Jump Instructions Explanation
 ##### 1) jne parse_digits
 
 - This instruction is used to jump to parse_digits if the first character is not a -. It checks whether the number is negative, and if it isn't, the program continues by parsing the digits directly.
