@@ -2,7 +2,7 @@
 
 ## Tasks
 ### Task 1- Control Flow and Conditional Logic (6 Marks)
-- The program classifies user input as either POSITIVE, NEGATIVE or ZERO.
+- The program classifies user input as either POSITIVE or NEGATIVE
  
 ```
 cd Task1_controFlow
@@ -14,18 +14,20 @@ ld -m elf_i386 task1.o -o task1
 - After running the above commands above, you are prompted to enter a number.
 - If you enter a negative number, the program returns "NEGATIVE" as output in the terminal.
 - If you enter a positive number i.e number greater than zero, the program returns "POSITIVE" as the output in the terminal.
-- If you enter 0 , the program returns "ZERO" as the output in the terminal.
+
 #### Challenge
+- The main difficulty here was properly using jumps and conditional statements  to handle different cases i.e (Positive or Negative).
 
 ### Task 2- Array Manipulation with Looping and Reversal (6 Marks)
 ```
 cd Task2_ArrayManipulation
-nasm -f elf32 task2.asm -o task2.o -g
-ld -m elf_i386 task2.o -o task2
+nasm -f elf64 task2.asm -o task2.o -g
+ld -m task2.o -o task2
 ./task2
 
 ```
 #### Challenge
+- I kept having issues with getting segmentation faults as output in the terminal which was a bit frustrating
 
 
 ### Task 3- Modular Program with Subroutines for Factorial Calculation (4 Marks)
@@ -40,6 +42,7 @@ ld -m elf_i386 task3.o -o task3
 ```
 - When you run the commands above, you are prompted to enter a number and the program returns the factorial of that input number.
 #### Challenge
+- I struggled with handling stack properly using subroutines. For this i had to save and restore register values.
 ### Task 4- Data Monitoring and Control Using Port-Based Simulation (4 Marks)
 - For this task, i simulated monitoring a sensor value and controlling motor and alarm states based on thresholds.
 - If the input is 50 or below, the output is "Motor is Off".
@@ -56,3 +59,4 @@ ld -m elf_i386 task4.o -o task4
 ```
 
 #### Challenge
+- It was a bit difficult ensuring the right actions are triggered based on sensor values hence needing precise control of memory locations.
