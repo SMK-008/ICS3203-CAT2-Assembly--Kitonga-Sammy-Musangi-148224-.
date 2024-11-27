@@ -14,9 +14,10 @@ ld -m elf_i386 task1.o -o task1
 - After running the above commands above, you are prompted to enter a number.
 - If you enter a negative number, the program returns "NEGATIVE" as output in the terminal.
 - If you enter a positive number i.e number greater than zero, the program returns "POSITIVE" as the output in the terminal.
+- If you enter zero, the program returns "ZERO" as the output in the terminal
 
 #### Challenge
-- The main difficulty here was properly using jumps and conditional statements  to handle different cases i.e (Positive or Negative).
+- The main difficulty here was properly using jumps and conditional statements  to handle different cases i.e (Positive or Negative or Zero).
 
 ### Task 2- Array Manipulation with Looping and Reversal (6 Marks)
 ```
